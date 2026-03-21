@@ -1,0 +1,27 @@
+{
+  "name": "blockchain",
+  "version": "1.0.0",
+  "description": "This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.",
+  "main": "check-balance.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "aes-js": "^4.0.0-beta.5",
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0",
+    "tslib": "^2.7.0",
+    "undici-types": "^6.19.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "hardhat": "^3.0.0"
+  }
+}
