@@ -1,173 +1,218 @@
-# E-Voting Desa — Sistem Pemilihan Kepala Desa Berbasis Blockchain
+<div align="center">
 
-Sistem e-voting transparan untuk pemilihan kepala desa menggunakan teknologi blockchain Ethereum. Setiap suara tercatat permanen di blockchain dan dapat diverifikasi publik.
+# 🗳️ E-Voting Desa
 
-## Arsitektur Sistem
-```
-evoting-desa/
-├── evoting-desa/      → Backend & Frontend (Laravel)
-├── evoting-signer/    → Blockchain Signer Service (Node.js)
-└── blockchain/        → Smart Contract (Hardhat + Solidity)
-```
+### Sistem Pemilihan Kepala Desa Berbasis Blockchain
 
-## Tech Stack
+[![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.19-363636?style=for-the-badge&logo=solidity&logoColor=white)](https://soliditylang.org)
+[![Node.js](https://img.shields.io/badge/Node.js-22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-3C3C3D?style=for-the-badge&logo=ethereum&logoColor=white)](https://ethereum.org)
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://evoting-desa-ctl2.vercel.app)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-| Layer | Teknologi |
-|-------|-----------|
-| Smart Contract | Solidity 0.8.19 + Hardhat |
-| Blockchain | Ethereum (local: Hardhat Network) |
-| Signer Service | Node.js + Express + ethers.js |
-| Backend | Laravel 11 (PHP 8.3) |
-| Frontend | Blade + Tailwind CSS |
-| Database | SQLite (development) |
+**Setiap suara tercatat permanen di blockchain — transparan, aman, dan tidak dapat dimanipulasi siapapun.**
+
+[🌐 Live Demo](https://evoting-desa-ctl2.vercel.app) · [⛓️ Smart Contract](https://sepolia.etherscan.io/address/0x002B40a71EE2d8135a3e960D484DDf4C6dDD766e) · [📋 Laporan Bug](https://github.com/Fajarrosyidi24/evoting-desa/issues)
+
+</div>
 
 ---
 
-## Prasyarat
+## 📸 Screenshot
 
-Pastikan sudah terinstall:
+| Halaman Publik | Login Warga | Halaman Voting |
+|:-:|:-:|:-:|
+| ![Publik](screenshots/publik.png) | ![Login](screenshots/login.png) | ![Voting](screenshots/voting.png) |
 
-- **PHP** >= 8.2
-- **Composer**
-- **Node.js** v22 LTS (bukan v25)
-- **npm**
-- **Git**
+| Dashboard Admin | Kelola Kandidat | Transaksi Blockchain |
+|:-:|:-:|:-:|
+| ![Dashboard](screenshots/dashboard.png) | ![Kandidat](screenshots/kandidat.png) | ![Transaksi](screenshots/transaksi.png) |
 
-Cek versi:
+---
+
+## ✨ Fitur Utama
+
+<table>
+<tr>
+<td width="50%">
+
+**🔐 Untuk Warga**
+- Login aman pakai NIK + tanggal lahir
+- Tidak perlu MetaMask atau crypto wallet
+- Suara tercatat permanen di blockchain
+- Dapat TX hash sebagai bukti voting
+- Verifikasi suara sendiri kapan saja
+
+</td>
+<td width="50%">
+
+**⚙️ Untuk Admin / Panitia**
+- Dashboard real-time dengan grafik
+- Kelola kandidat & daftarkan ke blockchain
+- Kelola DPT (Daftar Pemilih Tetap)
+- Mulai & akhiri voting dengan durasi custom
+- Export hasil & audit log transaksi
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**🌐 Untuk Publik**
+- Pantau hasil voting real-time
+- Blockchain explorer — lihat semua transaksi
+- Verifikasi suara via TX hash
+- Auto refresh setiap 30 detik
+- Tidak perlu login untuk melihat hasil
+
+</td>
+<td width="50%">
+
+**⛓️ Keunggulan Blockchain**
+- Data immutable — tidak bisa diubah
+- Transparan — siapapun bisa audit
+- Desentralisasi — tidak bergantung satu server
+- Smart contract otomatis — tanpa perantara
+- Deploy di Ethereum Sepolia Testnet
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Arsitektur Sistem
+```
+┌─────────────────────────────────────────────────────────┐
+│                      PENGGUNA                           │
+│         Warga │ Admin/Panitia │ Publik/Auditor           │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              FRONTEND (Blade + Tailwind CSS)             │
+│    Halaman Publik │ Login │ Voting │ Dashboard Admin      │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│                BACKEND (Laravel 11)                      │
+│   Auth │ BlockchainService │ API │ Controllers            │
+└──────────────┬──────────────────────────┬───────────────┘
+               │                          │
+               ▼                          ▼
+┌──────────────────────┐    ┌─────────────────────────────┐
+│  DATABASE            │    │  SIGNER SERVICE (Node.js)    │
+│  PostgreSQL          │    │  Express + ethers.js         │
+│  (Supabase)          │    │  Sign & broadcast tx         │
+└──────────────────────┘    └──────────────┬──────────────┘
+                                           │
+                                           ▼
+                            ┌─────────────────────────────┐
+                            │  BLOCKCHAIN                  │
+                            │  Ethereum Sepolia Testnet    │
+                            │  Smart Contract (Solidity)   │
+                            └─────────────────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Teknologi | Versi |
+|-------|-----------|-------|
+| Smart Contract | Solidity + Hardhat | 0.8.19 |
+| Blockchain Network | Ethereum Sepolia Testnet | — |
+| Signer Service | Node.js + Express + ethers.js | v22 LTS |
+| Backend | Laravel | 11 |
+| Frontend | Blade + Tailwind CSS | 3 |
+| Database | PostgreSQL (Supabase) | — |
+| Hosting Laravel | Vercel | — |
+| Hosting Signer | Vercel | — |
+
+---
+
+## 🚀 Demo Online
+
+| Service | URL |
+|---------|-----|
+| 🌐 Website | [evoting-desa-ctl2.vercel.app](https://evoting-desa-ctl2.vercel.app) |
+| 🔌 Signer API | [evoting-desa-three.vercel.app](https://evoting-desa-three.vercel.app) |
+| ⛓️ Smart Contract | [Sepolia Etherscan](https://sepolia.etherscan.io/address/0x002B40a71EE2d8135a3e960D484DDf4C6dDD766e) |
+
+### Akun Demo
+
+| Role | Kredensial |
+|------|-----------|
+| 👨‍💼 Admin | Email: `admin@desa.id` · Password: `password123` |
+| 🗳️ Warga | NIK: `3578012345678901` · Tgl Lahir: `1990-05-15` |
+
+---
+
+## ⚡ Cara Menjalankan Lokal
+
+### Prasyarat
 ```bash
-php --version
+php --version    # >= 8.2
 composer --version
-node --version   # harus v22.x.x
+node --version   # v22 LTS
 npm --version
+git --version
 ```
 
----
+### Clone Repository
+```bash
+git clone https://github.com/Fajarrosyidi24/evoting-desa.git
+cd evoting-desa
+```
 
-## Cara Menjalankan Project (Development)
+### Jalankan 4 Terminal Secara Bersamaan
 
-> Butuh **4 terminal** yang berjalan bersamaan
-
-### Terminal 1 — Jalankan Hardhat Local Blockchain
+**Terminal 1 — Hardhat Local Blockchain**
 ```bash
 cd blockchain
 npm install
 npx hardhat node
 ```
 
-Biarkan terminal ini tetap berjalan. Hardhat akan membuat 20 wallet virtual dengan masing-masing 10.000 ETH untuk testing.
-
----
-
-### Terminal 2 — Deploy Smart Contract
-
-Buka terminal baru:
+**Terminal 2 — Deploy Smart Contract**
 ```bash
 cd blockchain
-
-# Salin .env.example ke .env
 cp .env.example .env
-```
+# Edit .env, isi ADMIN_PRIVATE_KEY dengan Account #0 dari Terminal 1
 
-Edit `.env`, isi dengan private key dari Account #0 yang muncul di Terminal 1:
-```env
-ADMIN_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-```
-
-Deploy contract:
-```bash
 npx hardhat run scripts/deploy.js --network localhost
+# Salin CONTRACT_ADDRESS dari output
 ```
 
-Salin `CONTRACT_ADDRESS` dari output. Contoh:
-```
-Contract address: 0x5FbDB2315678afecb367f032d93F642f64180aa3
-```
-
----
-
-### Terminal 3 — Jalankan Signer Service (Node.js)
+**Terminal 3 — Node.js Signer Service**
 ```bash
 cd evoting-signer
 npm install
-
-# Salin .env.example ke .env
 cp .env.example .env
-```
+# Edit .env dengan CONTRACT_ADDRESS dari Terminal 2
 
-Edit `evoting-signer/.env`:
-```env
-PORT=3001
-RPC_URL=http://127.0.0.1:8545
-CHAIN_ID=31337
-ADMIN_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-ADMIN_WALLET_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
-INTERNAL_SECRET=ganti_dengan_string_rahasia_panjang
-```
-
-Jalankan:
-```bash
 node index.js
+# Test: curl http://localhost:3001/status -H "x-internal-secret: YOUR_SECRET"
 ```
 
-Test koneksi:
-```bash
-curl http://localhost:3001/status -H "x-internal-secret: ganti_dengan_string_rahasia_panjang"
-# Expected: {"aktif":false,"sisa_detik":0}
-```
-
----
-
-### Terminal 4 — Jalankan Laravel
+**Terminal 4 — Laravel**
 ```bash
 cd evoting-desa
 composer install
-npm install
-
-# Salin .env.example ke .env
 cp .env.example .env
-
-# Generate app key
 php artisan key:generate
-```
 
-Edit `evoting-desa/.env`:
-```env
-APP_NAME="E-Voting Desa"
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=sqlite
-
-BLOCKCHAIN_RPC_URL=http://127.0.0.1:8545
-BLOCKCHAIN_CHAIN_ID=31337
-CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
-ADMIN_WALLET_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-ADMIN_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-
-SIGNER_URL=http://localhost:3001
-INTERNAL_SECRET=ganti_dengan_string_rahasia_panjang
-```
-
-Setup database & seed data:
-```bash
-# Buat file database SQLite
+# Edit .env sesuai konfigurasi lokal
 touch database/database.sqlite
-
-# Jalankan migration
 php artisan migrate
-
-# Seed data dummy + sync ke blockchain
 php artisan db:seed
-```
 
-Jalankan server:
-```bash
 php artisan serve
 ```
 
----
-
-## Akses Aplikasi
+### Akses Aplikasi
 
 | Halaman | URL |
 |---------|-----|
@@ -178,106 +223,123 @@ php artisan serve
 
 ---
 
-## Akun Default (setelah seeding)
-
-### Admin / Panitia
-| Field | Value |
-|-------|-------|
-| Email | admin@desa.id |
-| Password | password123 |
-
-### Warga (contoh)
-| Field | Value |
-|-------|-------|
-| NIK | 3578012345678901 |
-| Tanggal Lahir | 1990-05-15 |
+## 📁 Struktur Folder
+```
+evoting-desa/
+│
+├── 📂 evoting-desa/              # Laravel Backend & Frontend
+│   ├── app/
+│   │   ├── Http/Controllers/
+│   │   │   ├── Admin/            # VotingController, KandidatController, PemilihController
+│   │   │   ├── Auth/             # PemilihLoginController, AdminLoginController
+│   │   │   ├── PublikController.php
+│   │   │   └── VotingController.php
+│   │   ├── Models/               # Pemilih, Kandidat, VotingLog, Setting
+│   │   └── Services/
+│   │       └── BlockchainService.php
+│   ├── database/
+│   │   └── seeders/DatabaseSeeder.php
+│   ├── resources/views/          # Blade templates
+│   │   ├── admin/                # Dashboard, kandidat, pemilih, voting
+│   │   ├── auth/                 # Login admin & warga
+│   │   ├── publik/               # Hasil & transaksi publik
+│   │   └── voting/               # Halaman voting warga
+│   └── vercel.json
+│
+├── 📂 evoting-signer/            # Node.js Blockchain Signer
+│   ├── services/
+│   │   └── blockchain.js         # ethers.js logic
+│   ├── middleware/
+│   │   └── auth.js               # Secret key validation
+│   ├── index.js                  # Express server
+│   └── vercel.json
+│
+└── 📂 blockchain/                # Smart Contract
+    ├── contracts/
+    │   └── Voting.sol            # Main smart contract
+    ├── scripts/
+    │   └── deploy.js             # Deploy script
+    └── hardhat.config.js
+```
 
 ---
 
-## Alur Penggunaan Sistem
+## 🔄 Alur Sistem
 ```
-1. Admin login → Dashboard
-2. Admin tambah kandidat → Daftarkan ke blockchain
-3. Admin tambah pemilih → Daftarkan ke blockchain
-4. Admin mulai voting (set durasi)
-5. Warga login dengan NIK + tanggal lahir
-6. Warga pilih kandidat → Konfirmasi → Suara tercatat di blockchain
-7. Publik bisa pantau hasil di halaman publik (real-time)
-8. Admin akhiri voting → Hasil final tampil
-9. Siapapun bisa verifikasi suara via TX hash
+1. Admin login → tambah kandidat → daftarkan ke blockchain
+2. Admin tambah pemilih → daftarkan wallet ke smart contract
+3. Admin mulai voting (set durasi dalam menit)
+      ↓
+4. Warga login dengan NIK + tanggal lahir
+5. Warga pilih kandidat → konfirmasi di modal
+6. Laravel kirim request ke Signer Service
+7. Signer sign & broadcast transaksi ke blockchain
+8. Smart contract catat suara secara permanen
+9. Warga terima TX hash sebagai bukti
+      ↓
+10. Publik pantau hasil real-time di halaman publik
+11. Admin akhiri voting → hasil final tampil
+12. Siapapun verifikasi suara via TX hash
 ```
 
 ---
 
-## Perintah Berguna
-
-### Reset total (migrate fresh + seed ulang)
+## 🔧 Perintah Berguna
 ```bash
-# Pastikan Hardhat node berjalan & signer aktif
+# Reset total database + sync ulang ke blockchain
 php artisan migrate:fresh --seed
-```
 
-### Sync ulang data ke blockchain (setelah Hardhat node restart)
-```bash
+# Sync ulang data ke blockchain (setelah Hardhat node restart)
 php artisan blockchain:sync
-```
 
-### Cek status blockchain
-```bash
-curl http://localhost:3001/status -H "x-internal-secret: YOUR_SECRET"
-```
+# Generate APP_KEY baru
+php artisan key:generate --show
 
----
-
-## Struktur Folder Penting
-```
-evoting-desa/                    ← Laravel
-├── app/
-│   ├── Http/Controllers/
-│   │   ├── Admin/               ← Controller admin
-│   │   ├── Auth/                ← Controller autentikasi
-│   │   ├── PublikController.php ← Halaman publik
-│   │   └── VotingController.php ← Halaman voting warga
-│   ├── Models/                  ← Eloquent models
-│   └── Services/
-│       └── BlockchainService.php ← Jembatan ke signer
-├── database/
-│   └── seeders/
-│       └── DatabaseSeeder.php   ← Seed + sync blockchain
-└── resources/views/             ← Blade templates
-
-evoting-signer/                  ← Node.js
-├── services/
-│   └── blockchain.js            ← Logic ethers.js
-├── middleware/
-│   └── auth.js                  ← Validasi secret key
-└── index.js                     ← Express server
-
-blockchain/                      ← Hardhat
-├── contracts/
-│   └── Voting.sol               ← Smart contract
-└── scripts/
-    └── deploy.js                ← Script deploy
+# Clear semua cache
+php artisan optimize:clear
 ```
 
 ---
 
-## Catatan Penting
+## ⚠️ Catatan Penting
 
-> **Hardhat local network reset setiap kali dimatikan.** Setelah Hardhat node di-restart, jalankan ulang deploy dan seed:
+> **Hardhat local network reset setiap kali dimatikan.**
+> Setelah Hardhat node di-restart, jalankan:
 > ```bash
-> # Terminal 2
 > npx hardhat run scripts/deploy.js --network localhost
-> # Update CONTRACT_ADDRESS di .env signer & laravel
->
-> # Terminal 4
 > php artisan migrate:fresh --seed
 > ```
 
-> **Private key di `.env` adalah kunci Hardhat bawaan** yang bersifat publik dan hanya untuk development. Jangan gunakan di mainnet.
+> **Private key Hardhat bawaan bersifat publik.**
+> Jangan gunakan untuk mainnet. Selalu generate wallet baru untuk production.
+
+> **Vercel serverless limitation.**
+> Session menggunakan cookie driver, queue menggunakan sync driver.
 
 ---
 
-## Lisensi
+## 🤝 Kontribusi
 
-MIT License — bebas digunakan dan dimodifikasi untuk keperluan desa.
+Kontribusi sangat disambut! Silakan:
+
+1. Fork repository ini
+2. Buat branch baru: `git checkout -b feature/fitur-baru`
+3. Commit perubahan: `git commit -m 'feat: tambah fitur baru'`
+4. Push ke branch: `git push origin feature/fitur-baru`
+5. Buat Pull Request
+
+---
+
+## 📄 Lisensi
+
+Didistribusikan di bawah lisensi MIT. Lihat [LICENSE](LICENSE) untuk informasi lebih lanjut.
+
+---
+
+<div align="center">
+
+Dibuat dengan ❤️ oleh [Fajar Rosyidi](https://github.com/Fajarrosyidi24)
+
+⭐ **Kalau project ini bermanfaat, kasih star ya!** ⭐
+
+</div>
