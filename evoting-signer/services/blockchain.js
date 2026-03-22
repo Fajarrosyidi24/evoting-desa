@@ -35,40 +35,40 @@ class BlockchainService {
     // ─── WRITE FUNCTIONS ───────────────────────────────────
 
     async tambahKandidat(nama, visi) {
-    try {
-        // Cek voting aktif dulu sebelum kirim transaksi
-        const votingAktif = await this.contract.votingAktif();
-        if (votingAktif) {
+        try {
+            // Cek voting aktif dulu sebelum kirim transaksi
+            const votingAktif = await this.contract.votingAktif();
+            if (votingAktif) {
+                return {
+                    success: false,
+                    error: 'Tidak bisa tambah kandidat saat voting sedang berlangsung',
+                };
+            }
+
+            const nonce = await this.getNonce();
+            const tx = await this.contract.tambahKandidat(nama, visi, {
+                gasLimit: 300000,
+                nonce,
+            });
+
+            const receipt = await tx.wait(1);
+
             return {
-                success: false,
-                error  : 'Tidak bisa tambah kandidat saat voting sedang berlangsung',
+                success: true,
+                tx_hash: receipt.hash,
+                block_number: receipt.blockNumber.toString(),
             };
+        } catch (error) {
+            const pesan = this._parseError(error);
+
+            // Kalau sudah terdaftar, anggap sukses
+            if (pesan.includes('sudah') || pesan.includes('already')) {
+                return { success: true, tx_hash: 'already_registered', block_number: '0' };
+            }
+
+            return { success: false, error: pesan };
         }
-
-        const nonce = await this.getNonce();
-        const tx    = await this.contract.tambahKandidat(nama, visi, {
-            gasLimit: 300000,
-            nonce,
-        });
-
-        const receipt = await tx.wait(1);
-
-        return {
-            success     : true,
-            tx_hash     : receipt.hash,
-            block_number: receipt.blockNumber.toString(),
-        };
-    } catch (error) {
-        const pesan = this._parseError(error);
-
-        // Kalau sudah terdaftar, anggap sukses
-        if (pesan.includes('sudah') || pesan.includes('already')) {
-            return { success: true, tx_hash: 'already_registered', block_number: '0' };
-        }
-
-        return { success: false, error: pesan };
     }
-}
 
     async daftarkanPemilih(walletAddress) {
         try {
@@ -208,23 +208,40 @@ class BlockchainService {
     }
 
     async getStatusVoting() {
-        const [aktif, sisaWaktu] = await Promise.all([
-            this.contract.votingAktif(),
-            this.contract.sisaWaktu(),
-        ]);
+        try {
+            const [aktif, sisaWaktu] = await Promise.all([
+                this.contract.votingAktif(),
+                this.contract.sisaWaktu(),
+            ]);
 
-        return {
-            aktif: aktif,
-            sisa_detik: Number(sisaWaktu),
-        };
+            return {
+                aktif: aktif,
+                sisa_detik: Number(sisaWaktu),
+            };
+        } catch (error) {
+            return {
+                aktif: false,
+                sisa_detik: 0,
+            };
+        }
     }
 
     async getHasilVoting(totalKandidat) {
+        // Kalau tidak ada kandidat, return array kosong
+        if (!totalKandidat || totalKandidat === 0) {
+            return [];
+        }
+
         const hasil = [];
 
         for (let i = 1; i <= totalKandidat; i++) {
-            const count = await this.contract.getVoteCount(i);
-            hasil.push({ kandidat_id: i, jumlah_suara: Number(count) });
+            try {
+                const count = await this.contract.getVoteCount(i);
+                hasil.push({ kandidat_id: i, jumlah_suara: Number(count) });
+            } catch (error) {
+                // Kalau kandidat tidak ada, skip
+                hasil.push({ kandidat_id: i, jumlah_suara: 0 });
+            }
         }
 
         return hasil;
@@ -245,28 +262,28 @@ class BlockchainService {
 
     // ─── HELPER ────────────────────────────────────────────
 
-   _parseError(error) {
-    // Tangkap reason string dari revert — ini yang paling akurat
-    if (error?.reason) return error.reason;
+    _parseError(error) {
+        // Tangkap reason string dari revert — ini yang paling akurat
+        if (error?.reason) return error.reason;
 
-    // Cek di error info (Hardhat local node)
-    if (error?.info?.error?.data?.message) return error.info.error.data.message;
-    if (error?.info?.error?.message) return error.info.error.message;
+        // Cek di error info (Hardhat local node)
+        if (error?.info?.error?.data?.message) return error.info.error.data.message;
+        if (error?.info?.error?.message) return error.info.error.message;
 
-    // Cek shortMessage dari ethers
-    if (error?.shortMessage) return error.shortMessage;
+        // Cek shortMessage dari ethers
+        if (error?.shortMessage) return error.shortMessage;
 
-    // Fallback cek message string
-    const msg = error?.message || '';
-    if (msg.includes('Tidak bisa tambah kandidat saat voting aktif')) return 'Tidak bisa tambah kandidat saat voting aktif';
-    if (msg.includes('Pemilih sudah terdaftar')) return 'Pemilih sudah terdaftar';
-    if (msg.includes('Pemilih sudah')) return 'Pemilih sudah memberikan suara';
-    if (msg.includes('Voting tidak aktif')) return 'Voting tidak aktif';
-    if (msg.includes('already been used')) return 'Nonce error - coba lagi';
-    if (msg.includes('Nonce too low')) return 'Nonce error - coba lagi';
+        // Fallback cek message string
+        const msg = error?.message || '';
+        if (msg.includes('Tidak bisa tambah kandidat saat voting aktif')) return 'Tidak bisa tambah kandidat saat voting aktif';
+        if (msg.includes('Pemilih sudah terdaftar')) return 'Pemilih sudah terdaftar';
+        if (msg.includes('Pemilih sudah')) return 'Pemilih sudah memberikan suara';
+        if (msg.includes('Voting tidak aktif')) return 'Voting tidak aktif';
+        if (msg.includes('already been used')) return 'Nonce error - coba lagi';
+        if (msg.includes('Nonce too low')) return 'Nonce error - coba lagi';
 
-    return msg || 'Terjadi kesalahan pada blockchain';
-}
+        return msg || 'Terjadi kesalahan pada blockchain';
+    }
 }
 
 module.exports = new BlockchainService();

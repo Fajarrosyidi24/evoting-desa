@@ -41,9 +41,19 @@ app.get('/suara/:kandidatId', async (req, res) => {
 
 // Ambil hasil semua kandidat
 app.get('/hasil', async (req, res) => {
-    const { total } = req.query;
-    const hasil = await blockchain.getHasilVoting(Number(total));
-    return res.json({ hasil });
+    try {
+        const total = Number(req.query.total) || 0;
+
+        // Kalau total 0, langsung return kosong
+        if (total === 0) {
+            return res.json({ hasil: [] });
+        }
+
+        const hasil = await blockchain.getHasilVoting(total);
+        return res.json({ hasil });
+    } catch (error) {
+        return res.json({ hasil: [] });
+    }
 });
 
 // Status voting (aktif/tidak + sisa waktu)

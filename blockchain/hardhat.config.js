@@ -16,6 +16,12 @@ const config = {
             accounts: [process.env.ADMIN_PRIVATE_KEY],
             chainId : 80002,
         },
+            sepolia: {
+            type    : "http",
+            url     : "https://ethereum-sepolia-rpc.publicnode.com",
+            accounts: [process.env.ADMIN_PRIVATE_KEY],
+            chainId : 11155111,
+        },
     },
 };
 
